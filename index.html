@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Bibliothèque</title>
+  <link rel="stylesheet" href="css/Aristo/jquery-ui-1.8.7.custom.css" type="text/css"> 
+  <link rel="stylesheet" href="css/style.css" type="text/css"> 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js" type="text/javascript"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js" type="text/javascript"></script>
+  <script src="js/underscore-min.js" type="text/javascript"></script>
+  <script src="js/json2.min.js" type="text/javascript"></script>
+  <script src="js/application3.js" type="text/javascript"></script>
+</head>
+
+<body>
+  <div id="desktop">
+    <div id="header">
+      <span>Bibliothèque personnelle</span>
+    </div>
+    <div id="books">
+    </div>
+    <div id="footer">
+      <div id="toolbar" class="ui-widget-header">
+        <button id="addBook">Ajouter un livre</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+<div id="bookDialog" title="Ajouter un nouveau livre">
+  <form>
+    <label for="title">Titre</label>
+    <input class="text" name="title">
+    <label for="author">Auteurs</label>
+    <input class="text" name="author">
+    <br>
+    <input type="radio" name="cover_url" id="color[1]" value="img/book-1.png"><label for="color[1]"><img src="img/book-1.png" width="32" height="32"></label>
+    <input type="radio" name="cover_url" id="color[2]" value="img/book-2.png"><label for="color[2]"><img src="img/book-2.png" width="32" height="32"></label>
+    <input type="radio" name="cover_url" id="color[3]" value="img/book-3.png"><label for="color[3]"><img src="img/book-3.png" width="32" height="32"></label>
+    <input type="radio" name="cover_url" id="color[4]" value="img/book-4.png"><label for="color[4]"><img src="img/book-4.png" width="32" height="32"></label>
+    <input type="radio" name="cover_url" id="color[5]" value="img/book-5.png"><label for="color[5]"><img src="img/book-5.png" width="32" height="32"></label>
+    <input type="radio" name="cover_url" id="color[6]" value="img/book-6.png"><label for="color[6]"><img src="img/book-6.png" width="32" height="32"></label>
+    <input type="radio" name="cover_url" id="color[7]" value="img/coffeecup.png"><label for="color[7]"><img src="img/coffeecup.png" width="32" height="32"></label>
+  </form>
+</div>
+
+<script id="bookTemplate" type="text/template">
+  <div class="book" style="background: url(<%= cover_url %>) no-repeat;">
+    <span class="title">
+      <%= title %>
+      <span class="author"><%= author %></span>
+    </span>
+  </div> 
+</script>
+
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>  <html> <head>   <title>application2.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               application2.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="cm">/*global $, _, window, jQuery, console */</span>
+
+<span class="nx">$</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h2>API object</h2>
+
+<p>The API object is responsible for communicating with the back-end. In
+this case, the "back-end" is a CouchDB database.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">var</span> <span class="nx">api</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="nx">fetch</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">callbacks</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+                    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/couchdb/livres/_design/livres/_view/all&#39;</span><span class="p">,</span>
+                    <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span>
+                    <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">returnedData</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="kd">var</span> <span class="nx">rows</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">returnedData</span><span class="p">.</span><span class="nx">rows</span><span class="p">).</span><span class="nx">pluck</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">);</span>
+                        <span class="p">(</span><span class="nx">callbacks</span><span class="p">.</span><span class="nx">success</span> <span class="o">||</span> <span class="nx">$</span><span class="p">.</span><span class="nx">noop</span><span class="p">)(</span><span class="nx">rows</span><span class="p">);</span>
+                    <span class="p">},</span>
+                    <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="p">(</span><span class="nx">callbacks</span><span class="p">.</span><span class="nx">error</span> <span class="o">||</span> <span class="nx">$</span><span class="p">.</span><span class="nx">noop</span><span class="p">)(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span><span class="p">);</span>
+                    <span class="p">}</span>
+                <span class="p">});</span>
+            <span class="p">},</span>
+            <span class="nx">create</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">jsonData</span><span class="p">,</span> <span class="nx">callbacks</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+                    <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+                    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/couchdb/livres/&#39;</span><span class="p">,</span>
+                    <span class="nx">contentType</span><span class="o">:</span> <span class="s1">&#39;application/json; charset=UTF-8&#39;</span><span class="p">,</span>
+                    <span class="nx">data</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">jsonData</span><span class="p">),</span>
+                    <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span>
+                    <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">returnedData</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="p">(</span><span class="nx">callbacks</span><span class="p">.</span><span class="nx">success</span> <span class="o">||</span> <span class="nx">$</span><span class="p">.</span><span class="nx">noop</span><span class="p">)(</span><span class="nx">returnedData</span><span class="p">);</span>
+                    <span class="p">},</span>
+                    <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="p">(</span><span class="nx">callbacks</span><span class="p">.</span><span class="nx">error</span> <span class="o">||</span> <span class="nx">$</span><span class="p">.</span><span class="nx">noop</span><span class="p">)(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span><span class="p">);</span>
+                    <span class="p">}</span>
+                <span class="p">});</span>
+            <span class="p">},</span>
+            <span class="nx">update</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">jsonData</span><span class="p">,</span> <span class="nx">callbacks</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+                    <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span>
+                    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/couchdb/livres/&#39;</span><span class="o">+</span><span class="nx">jsonData</span><span class="p">.</span><span class="nx">_id</span><span class="p">,</span>
+                    <span class="nx">contentType</span><span class="o">:</span> <span class="s1">&#39;application/json; charset=UTF-8&#39;</span><span class="p">,</span>
+                    <span class="nx">data</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">jsonData</span><span class="p">),</span>
+                    <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span>
+                    <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">returnedData</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="p">(</span><span class="nx">callbacks</span><span class="p">.</span><span class="nx">success</span> <span class="o">||</span> <span class="nx">$</span><span class="p">.</span><span class="nx">noop</span><span class="p">)({</span><span class="nx">_rev</span><span class="o">:</span> <span class="nx">returnedData</span><span class="p">.</span><span class="nx">rev</span><span class="p">});</span>
+                    <span class="p">},</span>
+                    <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="p">(</span><span class="nx">callbacks</span><span class="p">.</span><span class="nx">error</span> <span class="o">||</span> <span class="nx">$</span><span class="p">.</span><span class="nx">noop</span><span class="p">)(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span><span class="p">);</span>
+                    <span class="p">}</span>
+                <span class="p">});</span>
+            <span class="p">},</span>
+            <span class="nx">destroy</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">jsonData</span><span class="p">,</span> <span class="nx">callbacks</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+                    <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">,</span>
+                    <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/couchdb/livres/&#39;</span><span class="o">+</span><span class="nx">jsonData</span><span class="p">.</span><span class="nx">_id</span><span class="o">+</span><span class="s1">&#39;?rev=&#39;</span><span class="o">+</span><span class="nx">jsonData</span><span class="p">.</span><span class="nx">_rev</span><span class="p">,</span>
+                    <span class="nx">dataType</span><span class="o">:</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span>
+                    <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">returnedData</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="p">(</span><span class="nx">callbacks</span><span class="p">.</span><span class="nx">success</span> <span class="o">||</span> <span class="nx">$</span><span class="p">.</span><span class="nx">noop</span><span class="p">)(</span><span class="nx">returnedData</span><span class="p">);</span>
+                    <span class="p">},</span>
+                    <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="p">(</span><span class="nx">callbacks</span><span class="p">.</span><span class="nx">error</span> <span class="o">||</span> <span class="nx">$</span><span class="p">.</span><span class="nx">noop</span><span class="p">)(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span><span class="p">);</span>
+                    <span class="p">}</span>
+                <span class="p">});</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+    <span class="p">}());</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <h2>The "Book" model class</h2>
+
+<p>The Book model wraps the json data sent from the back-end. A Book is
+responsible for saving and deleting itself. Views can subscribe to a
+Book's events by calling the <code>bind</code> method passing in the event name for
+wich they need to be notified of. A Book mainly notifies its views of
+changes made in the data model.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">var</span> <span class="nx">Book</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">callbacks</span> <span class="o">=</span> <span class="p">{},</span>
+            <span class="nx">trigger</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">evt</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">list</span> <span class="o">=</span> <span class="p">(</span><span class="nx">callbacks</span><span class="p">[</span><span class="nx">evt</span><span class="p">]</span> <span class="o">=</span> <span class="nx">callbacks</span><span class="p">[</span><span class="nx">evt</span><span class="p">]</span> <span class="o">||</span> <span class="p">[]);</span>
+                <span class="nx">_</span><span class="p">(</span><span class="nx">list</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">it</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">it</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
+                <span class="p">});</span>
+            <span class="p">},</span>
+            <span class="nx">isNew</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="o">!</span><span class="nx">data</span><span class="p">.</span><span class="nx">_id</span><span class="p">;</span>
+            <span class="p">},</span>
+            <span class="nx">set</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">properties</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">_</span><span class="p">(</span><span class="nx">properties</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="nx">name</span> <span class="o">===</span> <span class="s1">&#39;id&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="nx">name</span> <span class="o">=</span> <span class="s1">&#39;_id&#39;</span><span class="p">;</span> <span class="p">}</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="nx">name</span> <span class="o">===</span> <span class="s1">&#39;rev&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="nx">name</span> <span class="o">=</span> <span class="s1">&#39;_rev&#39;</span><span class="p">;</span> <span class="p">}</span>
+                    <span class="nx">data</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">val</span><span class="p">;</span>
+                <span class="p">});</span>
+                <span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">);</span>
+            <span class="p">},</span>
+            <span class="nx">sync</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">methodName</span><span class="p">,</span> <span class="nx">callbacks</span><span class="p">)</span> <span class="p">{</span>
+                <span class="p">(</span><span class="nx">api</span><span class="p">[</span><span class="nx">methodName</span><span class="p">])(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">callbacks</span><span class="p">);</span>
+            <span class="p">};</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="nx">bind</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">evt</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">list</span> <span class="o">=</span> <span class="p">(</span><span class="nx">callbacks</span><span class="p">[</span><span class="nx">evt</span><span class="p">]</span> <span class="o">=</span> <span class="nx">callbacks</span><span class="p">[</span><span class="nx">evt</span><span class="p">]</span> <span class="o">||</span> <span class="p">[]);</span>
+                <span class="nx">list</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+                <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+            <span class="p">},</span>
+            <span class="nx">get</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">data</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span>
+            <span class="p">},</span>
+            <span class="nx">set</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">properties</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">set</span><span class="p">(</span><span class="nx">properties</span><span class="p">);</span>
+                <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+            <span class="p">},</span>
+            <span class="nx">save</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+                <span class="nx">sync</span><span class="p">(</span><span class="nx">isNew</span><span class="p">()</span> <span class="o">?</span> <span class="s1">&#39;create&#39;</span> <span class="o">:</span> <span class="s1">&#39;update&#39;</span><span class="p">,</span> <span class="p">{</span>
+                    <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">properties</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="nx">set</span><span class="p">(</span><span class="nx">properties</span><span class="p">);</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="nx">callback</span> <span class="o">&amp;&amp;</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">success</span><span class="p">)</span> <span class="p">{</span>
+                            <span class="nx">callback</span><span class="p">.</span><span class="nx">success</span><span class="p">(</span><span class="nx">self</span><span class="p">);</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                <span class="p">});</span>
+            <span class="p">},</span>
+            <span class="nx">destroy</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="nx">sync</span><span class="p">(</span><span class="s1">&#39;destroy&#39;</span><span class="p">,</span> <span class="p">{</span>
+                    <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                        <span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;destroy&#39;</span><span class="p">);</span>
+                    <span class="p">}</span>
+                <span class="p">});</span>
+            <span class="p">},</span>
+            <span class="nx">toJSON</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">data</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <h2>bookCollection model object</h2>
+
+<p>The bookCollection model object represents the list of Book model object
+(hence the name). The bookCollection is responsible for fetching the list
+of books from the back-end, adding new books to itself and knowing which
+Book is currently selected.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">var</span> <span class="nx">bookCollection</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">callbacks</span> <span class="o">=</span> <span class="p">{},</span>
+            <span class="nx">models</span> <span class="o">=</span> <span class="p">[],</span>
+            <span class="nx">selectedModel</span><span class="p">,</span>
+            <span class="nx">trigger</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">evt</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">list</span> <span class="o">=</span> <span class="p">(</span><span class="nx">callbacks</span><span class="p">[</span><span class="nx">evt</span><span class="p">]</span> <span class="o">=</span> <span class="nx">callbacks</span><span class="p">[</span><span class="nx">evt</span><span class="p">]</span> <span class="o">||</span> <span class="p">[]),</span>
+                    <span class="nx">extraParameters</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+                <span class="nx">_</span><span class="p">(</span><span class="nx">list</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">it</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">it</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">extraParameters</span><span class="p">);</span>
+                <span class="p">});</span>
+            <span class="p">},</span>
+            <span class="nx">add</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">models</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">model</span><span class="p">);</span>
+                <span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="nx">model</span><span class="p">);</span>
+            <span class="p">},</span>
+            <span class="nx">parse</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">rows</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">_</span><span class="p">(</span><span class="nx">rows</span><span class="p">).</span><span class="nx">chain</span><span class="p">().</span><span class="nx">map</span><span class="p">(</span><span class="nx">Book</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="nx">add</span><span class="p">);</span>
+            <span class="p">};</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="nx">bind</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">evt</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">list</span> <span class="o">=</span> <span class="p">(</span><span class="nx">callbacks</span><span class="p">[</span><span class="nx">evt</span><span class="p">]</span> <span class="o">=</span> <span class="nx">callbacks</span><span class="p">[</span><span class="nx">evt</span><span class="p">]</span> <span class="o">||</span> <span class="p">[]);</span>
+                <span class="nx">list</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+                <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+            <span class="p">},</span>
+            <span class="nx">fetch</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="nx">api</span><span class="p">.</span><span class="nx">fetch</span><span class="p">({</span><span class="nx">success</span><span class="o">:</span> <span class="nx">parse</span><span class="p">});</span>
+            <span class="p">},</span>
+            <span class="nx">add</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">add</span><span class="p">(</span><span class="nx">model</span><span class="p">);</span>
+            <span class="p">},</span>
+            <span class="nx">select</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">selectedModel</span> <span class="o">=</span> <span class="nx">model</span><span class="p">;</span>
+                <span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="nx">model</span><span class="p">);</span>
+            <span class="p">},</span>
+            <span class="nx">selected</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">selectedModel</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+    <span class="p">}());</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <h2>BookView class</h2>
+
+<p>The BookView class represents a Book model instance on screen. It is
+responsible for rendering itself, reacting to user interaction and to
+events triggered from it's associated Book model instance.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">var</span> <span class="nx">BookView</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">template</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">template</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#bookTemplate&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">()),</span>
+            <span class="nx">el</span><span class="p">,</span>
+            <span class="nx">render</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="nx">el</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">el</span> <span class="o">||</span> <span class="s2">&quot;&lt;div&gt;&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">html</span><span class="p">(</span> <span class="nx">$</span><span class="p">(</span><span class="nx">template</span><span class="p">(</span><span class="nx">model</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">()))</span> <span class="p">)</span>
+                    <span class="p">.</span><span class="nx">hover</span><span class="p">(</span>
+                        <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span><span class="s1">&#39;#B9E0F5&#39;</span><span class="p">);</span> <span class="p">},</span>
+                        <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span><span class="s1">&#39;#FFF&#39;</span><span class="p">);</span> <span class="p">}</span>
+                    <span class="p">);</span>
+            <span class="p">},</span>
+            <span class="nx">remove</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="nx">$</span><span class="p">(</span><span class="nx">el</span><span class="p">).</span><span class="nx">remove</span><span class="p">();</span>
+            <span class="p">};</span>
+
+        <span class="nx">model</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">,</span> <span class="nx">render</span><span class="p">);</span>
+        <span class="nx">model</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;destroy&#39;</span><span class="p">,</span> <span class="nx">remove</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="nx">render</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> <span class="nx">render</span><span class="p">();</span> <span class="k">return</span> <span class="k">this</span><span class="p">;</span> <span class="p">},</span>
+            <span class="nx">el</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">el</span><span class="p">;</span> <span class="p">}</span>
+        <span class="p">};</span>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h2>bookCollectionView object</h2>
+
+<p>The bookCollectionView represents the entire book collection on screen.
+It reacts to the <code>add</code> event triggered from the <code>bookCollection</code> object
+by creating a <code>BookView</code> instance and rendering it on screen.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">var</span> <span class="nx">bookCollectionView</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#books&#39;</span><span class="p">),</span>
+            <span class="nx">addOne</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">BookView</span><span class="p">(</span><span class="nx">model</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">render</span><span class="p">()</span>
+                    <span class="p">.</span><span class="nx">el</span><span class="p">()</span>
+                    <span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">evt</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="nx">bookCollection</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="nx">model</span><span class="p">);</span>
+                    <span class="p">})</span>
+                    <span class="p">.</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">el</span><span class="p">);</span>
+            <span class="p">};</span>
+
+        <span class="nx">bookCollection</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="nx">addOne</span><span class="p">);</span>
+    <span class="p">}());</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h2>bookDialog object</h2>
+
+<p>The bookDialog is responsible for presenting and allowing the user to
+modify the data model. The book dialog bonds itself to the <code>select</code> event
+of the <code>bookCollection</code> to initialize the input fields and showing the
+dialog box.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">var</span> <span class="nx">bookDialog</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#bookDialog&#39;</span><span class="p">).</span><span class="nx">dialog</span><span class="p">({</span>
+                <span class="nx">autoOpen</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+                <span class="nx">width</span><span class="o">:</span> <span class="mi">500</span><span class="p">,</span>
+                <span class="nx">buttons</span><span class="o">:</span> <span class="p">[</span>
+                    <span class="p">{</span>   <span class="nx">text</span><span class="o">:</span> <span class="s2">&quot;Retirer&quot;</span><span class="p">,</span>
+                        <span class="nx">click</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                            <span class="nx">bookCollection</span>
+                                <span class="p">.</span><span class="nx">selected</span><span class="p">()</span>
+                                <span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
+                            <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">dialog</span><span class="p">(</span><span class="s1">&#39;close&#39;</span><span class="p">);</span>
+                        <span class="p">}</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span>   <span class="nx">text</span><span class="o">:</span> <span class="s2">&quot;Enregistrer&quot;</span><span class="p">,</span>
+                        <span class="nx">click</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                            <span class="nx">Book</span><span class="p">({</span>
+                                <span class="nx">title</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;input[name=title]&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(),</span>
+                                <span class="nx">author</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;input[name=author]&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(),</span>
+                                <span class="nx">cover_url</span> <span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;input[name=cover_url]:checked&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+                            <span class="p">}).</span><span class="nx">save</span><span class="p">({</span>
+                                <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">newBook</span><span class="p">)</span> <span class="p">{</span>
+                                    <span class="nx">bookCollection</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">newBook</span><span class="p">);</span>
+                                    <span class="nx">bookCollection</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="nx">newBook</span><span class="p">);</span>
+                                <span class="p">}</span>
+                            <span class="p">});</span>
+                        <span class="p">}</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span>   <span class="nx">text</span><span class="o">:</span> <span class="s2">&quot;Appliquer&quot;</span><span class="p">,</span>
+                        <span class="nx">click</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                            <span class="nx">bookCollection</span>
+                                <span class="p">.</span><span class="nx">selected</span><span class="p">()</span>
+                                <span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+                                    <span class="nx">title</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;input[name=title]&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(),</span>
+                                    <span class="nx">author</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;input[name=author]&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">(),</span>
+                                    <span class="nx">cover_url</span> <span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;input[name=cover_url]:checked&#39;</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span>
+                                <span class="p">})</span>
+                                <span class="p">.</span><span class="nx">save</span><span class="p">();</span>
+                        <span class="p">}</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span>   <span class="nx">text</span><span class="o">:</span> <span class="s2">&quot;Fermer&quot;</span><span class="p">,</span>
+                        <span class="nx">click</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                            <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">dialog</span><span class="p">(</span><span class="s1">&#39;close&#39;</span><span class="p">);</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+            <span class="p">})</span>
+            <span class="p">.</span><span class="nx">prevAll</span><span class="p">(</span><span class="s1">&#39;.ui-dialog-titlebar&#39;</span><span class="p">)</span>
+                <span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;.ui-dialog-title&#39;</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                    <span class="kd">var</span> <span class="nx">ui</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+                    <span class="nx">bookCollection</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="nx">$</span><span class="p">(</span><span class="nx">ui</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">model</span> <span class="o">?</span> <span class="s1">&#39;Modifier le livre&#39;</span> <span class="o">:</span> <span class="s1">&#39;Ajouter un nouveau livre&#39;</span><span class="p">);</span>
+                    <span class="p">});</span>
+                <span class="p">})</span>
+                <span class="p">.</span><span class="nx">end</span><span class="p">()</span>
+            <span class="p">.</span><span class="nx">end</span><span class="p">()</span>
+            <span class="p">.</span><span class="nx">nextAll</span><span class="p">(</span><span class="s1">&#39;.ui-dialog-buttonpane&#39;</span><span class="p">)</span>
+                <span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;button:nth-child(1)&#39;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="s1">&#39;ui-button-text-only&#39;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;ui-button-text-icon-primary&#39;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="s1">&#39;&lt;span class=&quot;ui-button-icon-primary ui-icon ui-icon-trash&quot;&gt;&lt;/span&gt;&#39;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">css</span><span class="p">({</span>
+                        <span class="nx">position</span><span class="o">:</span> <span class="s1">&#39;absolute&#39;</span><span class="p">,</span>
+                        <span class="nx">left</span><span class="o">:</span> <span class="s1">&#39;15px&#39;</span>
+                    <span class="p">})</span>
+                    <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                        <span class="kd">var</span> <span class="nx">ui</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+                        <span class="nx">bookCollection</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+                            <span class="nx">$</span><span class="p">(</span><span class="nx">ui</span><span class="p">)[</span><span class="nx">model</span> <span class="o">?</span> <span class="s1">&#39;show&#39;</span> <span class="o">:</span> <span class="s1">&#39;hide&#39;</span><span class="p">]();</span>
+                        <span class="p">});</span>
+                    <span class="p">})</span>
+                <span class="p">.</span><span class="nx">end</span><span class="p">()</span>
+                <span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;button:nth-child(2)&#39;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="s1">&#39;ui-button-text-only&#39;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;ui-button-text-icon-primary&#39;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="s1">&#39;&lt;span class=&quot;ui-button-icon-primary ui-icon ui-icon-disk&quot;&gt;&lt;/span&gt;&#39;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                        <span class="kd">var</span> <span class="nx">ui</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+                        <span class="nx">bookCollection</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+                            <span class="nx">$</span><span class="p">(</span><span class="nx">ui</span><span class="p">)[</span><span class="nx">model</span> <span class="o">?</span> <span class="s1">&#39;hide&#39;</span> <span class="o">:</span> <span class="s1">&#39;show&#39;</span><span class="p">]();</span>
+                        <span class="p">});</span>
+                    <span class="p">})</span>
+                <span class="p">.</span><span class="nx">end</span><span class="p">()</span>
+                <span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;button:nth-child(3)&#39;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="s1">&#39;ui-button-text-only&#39;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;ui-button-text-icon-primary&#39;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="s1">&#39;&lt;span class=&quot;ui-button-icon-primary ui-icon ui-icon-disk&quot;&gt;&lt;/span&gt;&#39;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                        <span class="kd">var</span> <span class="nx">ui</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+                        <span class="nx">bookCollection</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+                            <span class="nx">$</span><span class="p">(</span><span class="nx">ui</span><span class="p">)[</span><span class="nx">model</span> <span class="o">?</span> <span class="s1">&#39;show&#39;</span> <span class="o">:</span> <span class="s1">&#39;hide&#39;</span><span class="p">]();</span>
+                        <span class="p">});</span>
+                    <span class="p">})</span>
+                <span class="p">.</span><span class="nx">end</span><span class="p">()</span>
+                <span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;button:nth-child(4)&#39;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="s1">&#39;ui-button-text-only&#39;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;ui-button-text-icon-primary&#39;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="nx">prepend</span><span class="p">(</span><span class="s1">&#39;&lt;span class=&quot;ui-button-icon-primary ui-icon ui-icon-close&quot;&gt;&lt;/span&gt;&#39;</span><span class="p">)</span>
+                <span class="p">.</span><span class="nx">end</span><span class="p">()</span>
+            <span class="p">.</span><span class="nx">end</span><span class="p">()</span>
+            <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">ui</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+                <span class="nx">bookCollection</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">$</span><span class="p">(</span><span class="nx">ui</span><span class="p">).</span><span class="nx">dialog</span><span class="p">(</span><span class="s1">&#39;open&#39;</span><span class="p">);</span>
+                <span class="p">});</span>
+            <span class="p">})</span>
+            <span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;input[name=title]&#39;</span><span class="p">)</span>
+                <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                    <span class="kd">var</span> <span class="nx">input</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+                    <span class="nx">bookCollection</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="nx">$</span><span class="p">(</span><span class="nx">input</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">model</span> <span class="o">?</span> <span class="nx">model</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">().</span><span class="nx">title</span> <span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">);</span>
+                    <span class="p">});</span>
+                <span class="p">})</span>
+            <span class="p">.</span><span class="nx">end</span><span class="p">()</span>
+            <span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;input[name=author]&#39;</span><span class="p">)</span>
+                <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                    <span class="kd">var</span> <span class="nx">input</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+                    <span class="nx">bookCollection</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="nx">$</span><span class="p">(</span><span class="nx">input</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">model</span> <span class="o">?</span> <span class="nx">model</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">().</span><span class="nx">author</span> <span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">);</span>
+                    <span class="p">});</span>
+                <span class="p">})</span>
+            <span class="p">.</span><span class="nx">end</span><span class="p">()</span>
+            <span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;input[name=cover_url]&#39;</span><span class="p">)</span>
+                <span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                    <span class="kd">var</span> <span class="nx">input</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+                    <span class="nx">bookCollection</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="nx">$</span><span class="p">(</span><span class="nx">input</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s1">&#39;checked&#39;</span><span class="p">,</span> <span class="nx">model</span> <span class="o">&amp;&amp;</span> <span class="nx">$</span><span class="p">(</span><span class="nx">input</span><span class="p">).</span><span class="nx">val</span><span class="p">()</span> <span class="o">===</span> <span class="nx">model</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">().</span><span class="nx">cover_url</span><span class="p">);</span>
+                    <span class="p">});</span>
+                <span class="p">})</span>
+            <span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+    <span class="p">}());</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <h2>buttonBar object</h2>
+
+<p>The buttonBar contains the "add new book" button. It triggers the
+bookCollection <code>select</code> event and thus, the opening of the <code>bookDialog</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="kd">var</span> <span class="nx">buttonBar</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#addBook&#39;</span><span class="p">)</span>
+            <span class="p">.</span><span class="nx">button</span><span class="p">({</span>
+                <span class="nx">icons</span><span class="o">:</span> <span class="p">{</span> <span class="nx">primary</span><span class="o">:</span> <span class="s1">&#39;ui-icon-plus&#39;</span> <span class="p">}</span>
+            <span class="p">})</span>
+            <span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="nx">bookCollection</span><span class="p">.</span><span class="nx">select</span><span class="p">();</span>
+            <span class="p">})</span>
+        <span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+    <span class="p">}());</span>
+
+    <span class="nx">bookCollection</span><span class="p">.</span><span class="nx">fetch</span><span class="p">();</span>
+
+<span class="p">});</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

@@ -1,0 +1,57 @@
+body {
+  margin-top: 40px;
+  font: 0.9em Arial,sans-serif;
+}
+#desktop {
+  background-image: url('../img/wood.png');
+  color: white;
+  height: 800px;
+  width: 950px;
+  margin: 0 auto;
+  box-shadow: 0 0 30px black;
+}
+#toolbar {
+  padding: 0.3em;
+}
+.ui-widget {
+  font-size: 0.9em;
+}
+#header > span {
+  background: none repeat scroll 0 0 rgba(0, 0, 0, 0.3);
+  font: 2.5em Klavika;
+  padding: 10px 175px 10px 20px;
+  position: relative;
+  top: 20px;
+}
+#books {
+  width: 950px;
+  height: 683px;
+  margin-top: 30px;
+  overflow-y: auto;
+}
+.book {
+  float: left;
+  height: 130px;
+  margin: 20px;
+  padding-top: 40px;
+  width: 265px;
+  cursor: pointer;
+}
+.book .title {
+  display: block;
+  font: 1.5em Klavika;
+  padding: 2px 0 2px 5px;
+  background: none repeat scroll 0 0 rgba(0, 0, 0, 0.4);
+}
+.book .author {
+  display: block;
+  font: italic 0.7em Klavika;
+}
+
+label + input.text {
+  display: block;
+  margin: 5px 0;
+}
+input.text {
+  width: 465px;
+}
